@@ -18,8 +18,15 @@ const ContentContext = createContext<ContentState>({
  * Carga el contenido desde Strapi en el idioma activo. Si el CMS no responde,
  * la página sigue funcionando con el contenido local (`source: 'local'`).
  */
+const CLAVE_IDIOMA = 'bmc-idioma'
+
+function idiomaGuardado(): Locale {
+  const guardado = typeof localStorage !== 'undefined' ? localStorage.getItem(CLAVE_IDIOMA) : null
+  return guardado === 'en' || guardado === 'es' ? guardado : 'es'
+}
+
 export function ContentProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocale] = useState<Locale>('es')
+  const [locale, setLocale] = useState<Locale>(idiomaGuardado)
   const [state, setState] = useState<SiteContent & { loading: boolean; error: string | null }>({
     ...localContent,
     loading: true,
@@ -42,7 +49,10 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     return () => controller.abort()
   }, [locale])
 
-  const cambiarIdioma = useCallback((next: Locale) => setLocale(next), [])
+  const cambiarIdioma = useCallback((next: Locale) => {
+    localStorage.setItem(CLAVE_IDIOMA, next)
+    setLocale(next)
+  }, [])
 
   return (
     <ContentContext.Provider value={{ ...state, setLocale: cambiarIdioma }}>

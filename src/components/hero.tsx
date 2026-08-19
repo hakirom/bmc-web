@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useContent } from '@/lib/content-context'
 import { Icon } from './icon'
+import { PlataformaPanel } from './plataforma-detalle'
 
 /** Tarjetas visibles a la vez según el ancho de pantalla. */
 function useVisibleCount() {
@@ -22,7 +24,8 @@ function useVisibleCount() {
 }
 
 export function Hero() {
-  const { hero, ui: t } = useContent()
+  const { hero, ui: t, plataformas } = useContent()
+  const [detalle, setDetalle] = useState<string | null>(null)
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
   const visible = useVisibleCount()
@@ -71,12 +74,12 @@ export function Hero() {
             {hero.ctaPrimary}
             <ArrowRight size={16} aria-hidden="true" />
           </a>
-          <a
-            href="#"
+          <Link
+            to="/acceso"
             className="inline-flex items-center gap-2 rounded-md border border-white/50 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/10"
           >
             {hero.ctaSecondary}
-          </a>
+          </Link>
         </div>
 
         <div
@@ -129,13 +132,14 @@ export function Hero() {
                     </span>
                     <h3 className="mt-4 text-base font-bold leading-snug text-white">{platform.title}</h3>
                     <p className="mt-3 text-sm leading-relaxed text-white/70">{platform.body}</p>
-                    <a
-                      href="#"
+                    <button
+                      type="button"
+                      onClick={() => setDetalle(platform.title)}
                       className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-azure-light hover:underline"
                     >
                       {t.conocerMas}
                       <ArrowRight size={14} aria-hidden="true" />
-                    </a>
+                    </button>
                   </article>
                 </li>
               ))}
@@ -159,6 +163,15 @@ export function Hero() {
           </div>
         </div>
       </div>
+
+      {detalle ? (
+        (() => {
+          const seleccionada = plataformas.find((p) => p.title === detalle)
+          return seleccionada ? (
+            <PlataformaPanel plataforma={seleccionada} onClose={() => setDetalle(null)} />
+          ) : null
+        })()
+      ) : null}
     </section>
   )
 }

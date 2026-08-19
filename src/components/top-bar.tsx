@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ChevronDown, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { EnlaceUi } from './enlace-ui'
 import type { Locale } from '@/lib/cms'
 import { useContent } from '@/lib/content-context'
 
@@ -15,12 +16,18 @@ export function TopBar() {
   const activo = IDIOMAS.find((i) => i.code === locale) ?? IDIOMAS[0]!
 
   return (
-    <div className="hidden border-b border-line-dark/40 bg-navy-900 text-white lg:block">
+    // `z-[60]` la deja por encima de la cabecera sticky (z-50); si no, el
+    // desplegable de idioma queda tapado al abrirse.
+    <div className="relative z-[60] hidden border-b border-line-dark/40 bg-navy-900 text-white lg:block">
       <div className="container-page flex h-9 items-center justify-end gap-6 text-[13px]">
         {chrome.utilityLinks.map((link) => (
-          <a key={link} href="#" className="text-white/75 transition-colors hover:text-white">
-            {link}
-          </a>
+          <EnlaceUi
+            key={link.label}
+            url={link.url}
+            className="text-white/75 transition-colors hover:text-white"
+          >
+            {link.label}
+          </EnlaceUi>
         ))}
 
         <div className="relative">
@@ -40,7 +47,7 @@ export function TopBar() {
           {open ? (
             <ul
               role="listbox"
-              className="absolute right-0 top-full z-50 mt-1 w-32 overflow-hidden rounded-md border border-line bg-white py-1 text-ink shadow-lg"
+              className="absolute right-0 top-full z-[70] mt-1 w-32 overflow-hidden rounded-md border border-line bg-white py-1 text-ink shadow-lg"
             >
               {IDIOMAS.map((idioma) => (
                 <li key={idioma.code}>

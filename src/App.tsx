@@ -12,11 +12,10 @@ import { StatsStrip } from '@/components/stats-strip'
 import { TopBar } from '@/components/top-bar'
 import { ValueCarousel } from '@/components/value-carousel'
 import { WhatsappFab } from '@/components/whatsapp-fab'
-import { ContentProvider } from '@/lib/content-context'
 
 export default function App() {
   return (
-    <ContentProvider>
+    <>
       <SkipLink />
 
       <TopBar />
@@ -39,6 +38,6 @@ export default function App() {
         <SourceBadge />
         <DemoBadge />
       </div>
-    </ContentProvider>
+    </>
   )
 }

@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Menu, Search, UserRound, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useContent } from '@/lib/content-context'
+import { EnlaceUi } from './enlace-ui'
 import { BmcLogo } from './bmc-logo'
 
 export function Navbar() {
@@ -41,13 +43,13 @@ export function Navbar() {
         </a>
 
         <div className="ml-auto flex items-center gap-2 sm:gap-3">
-          <a
-            href="#"
+          <Link
+            to="/acceso"
             className="inline-flex items-center gap-2 rounded-md border border-white/45 px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-navy"
           >
             <UserRound size={16} aria-hidden="true" />
             {chrome.accessLabel}
-          </a>
+          </Link>
           <button
             type="button"
             aria-label={t.buscar}
@@ -121,10 +123,10 @@ export function Navbar() {
           <div className="border-t border-line-dark lg:hidden">
             <ul className="container-page flex flex-wrap gap-x-5 gap-y-2 py-4 text-sm">
               {chrome.utilityLinks.map((link) => (
-                <li key={link}>
-                  <a href="#" className="text-white/70 hover:text-white">
-                    {link}
-                  </a>
+                <li key={link.label}>
+                  <EnlaceUi url={link.url} className="text-white/70 hover:text-white">
+                    {link.label}
+                  </EnlaceUi>
                 </li>
               ))}
             </ul>

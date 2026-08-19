@@ -19,8 +19,10 @@ import { ui, type UiStrings } from '@/data/ui'
 export type Locale = 'es' | 'en'
 
 /** Navegación, pie de página e institucional: lo que rodea al contenido. */
+export type EnlaceUi = { label: string; url: string }
+
 export type SiteChrome = {
-  utilityLinks: string[]
+  utilityLinks: EnlaceUi[]
   accessLabel: string
   megaMenu: { title: string; links: string[] }[]
   footerDescription: string
@@ -39,9 +41,14 @@ type StrapiSingle<T> = { data: T | null }
 
 type PlataformaCms = {
   titulo: string
+  slug: string
   descripcion: string
   icono: string
   orden: number
+  activa: boolean
+  requiereSesion: boolean
+  resumenDemo: string | null
+  caracteristicas: { texto: string }[]
 }
 
 type ServicioCms = {
@@ -70,6 +77,40 @@ export type BoletinCms = {
   resumen: string
   categoria: 'boletin-diario' | 'estudio-economico' | 'comunicado'
   destacado: boolean
+}
+
+export type PlataformaDetalle = {
+  title: string
+  slug: string
+  body: string
+  icon: string
+  requiereSesion: boolean
+  caracteristicas: string[]
+}
+
+export type ComponentePortal = {
+  clave: string
+  titulo: string
+  descripcion: string
+  tipo: 'operaciones' | 'boletines' | 'tramites' | 'documentos' | 'soporte' | 'enlace'
+  icono: string
+  orden: number
+  requiereSesion: boolean
+  etiquetaAccion: string | null
+}
+
+type ComponentePortalCms = ComponentePortal & { activo: boolean }
+
+type PasoGuion = { clave: string; mensaje: string }
+
+type TextosCms = {
+  guionPqrsf: PasoGuion[]
+  acciones: Record<string, string>
+  tablero: Record<string, string>
+  boletines: Record<string, string>
+  acceso: Record<string, string>
+  portal: Record<string, string>
+  pqrsf: Record<string, string>
 }
 
 type EnlaceCms = { etiqueta: string; url: string }
@@ -116,6 +157,10 @@ export type SiteContent = {
   locale: Locale
   chrome: SiteChrome
   ui: UiStrings
+  plataformas: PlataformaDetalle[]
+  portal: ComponentePortal[]
+  /** Guion del asistente PQRSF, indexado por clave de paso. */
+  guionPqrsf: Record<string, string>
   hero: typeof heroLocal
   servicesSection: typeof serviciosLocal
   valueSection: typeof valorLocal
@@ -127,7 +172,7 @@ export type SiteContent = {
 }
 
 const chromeLocal: SiteChrome = {
-  utilityLinks: utilidadesLocal,
+  utilityLinks: utilidadesLocal.map((label) => ({ label, url: '#' })),
   accessLabel: 'Acceso',
   megaMenu: megaMenuLocal.map((c) => ({ title: c.title, links: [...c.links] })),
   footerDescription:
@@ -145,6 +190,9 @@ export const localContent: SiteContent = {
   locale: 'es',
   chrome: chromeLocal,
   ui: ui.es,
+  plataformas: [],
+  portal: [],
+  guionPqrsf: {},
   hero: heroLocal,
   servicesSection: serviciosLocal,
   valueSection: valorLocal,
@@ -216,6 +264,49 @@ const POPULATE_CONFIG = [
   'populate[columnasFooter][populate][enlaces]=true',
 ].join('&')
 
+/** Mezcla los textos del CMS sobre el diccionario local, que actúa de respaldo. */
+function mapTextos(base: UiStrings, cms: TextosCms | null): UiStrings {
+  if (!cms) return base
+
+  return {
+    ...base,
+    conocerMas: cms.acciones.conocerMas ?? base.conocerMas,
+    verTodosServicios: cms.acciones.verTodosServicios ?? base.verTodosServicios,
+    leerBoletin: cms.acciones.leerBoletin ?? base.leerBoletin,
+    anterior: cms.acciones.anterior ?? base.anterior,
+    siguiente: cms.acciones.siguiente ?? base.siguiente,
+    buscar: cms.acciones.buscar ?? base.buscar,
+    buscarPlaceholder: cms.acciones.buscarPlaceholder ?? base.buscarPlaceholder,
+    abrirMenu: cms.acciones.abrirMenu ?? base.abrirMenu,
+    cerrarMenu: cms.acciones.cerrarMenu ?? base.cerrarMenu,
+    cambiarIdioma: cms.acciones.cambiarIdioma ?? base.cambiarIdioma,
+    saltarContenido: cms.acciones.saltarContenido ?? base.saltarContenido,
+    volverInicio: cms.acciones.volverInicio ?? base.volverInicio,
+    mercadoFisicos: cms.tablero.mercadoFisicos ?? base.mercadoFisicos,
+    mercadoFinancieros: cms.tablero.mercadoFinancieros ?? base.mercadoFinancieros,
+    columnas: {
+      negocio: cms.tablero.colNegocio ?? base.columnas.negocio,
+      producto: cms.tablero.colProducto ?? base.columnas.producto,
+      cantidad: cms.tablero.colCantidad ?? base.columnas.cantidad,
+      valor: cms.tablero.colValor ?? base.columnas.valor,
+      instrumento: cms.tablero.colInstrumento ?? base.columnas.instrumento,
+      tasa: cms.tablero.colTasa ?? base.columnas.tasa,
+    },
+    numeroOperaciones: cms.tablero.numeroOperaciones ?? base.numeroOperaciones,
+    valorNegociado: cms.tablero.valorNegociado ?? base.valorNegociado,
+    fechaCierre: cms.tablero.fechaCierre ?? base.fechaCierre,
+    categorias: {
+      'boletin-diario': cms.boletines.catBoletinDiario ?? base.categorias['boletin-diario'],
+      'estudio-economico': cms.boletines.catEstudioEconomico ?? base.categorias['estudio-economico'],
+      comunicado: cms.boletines.catComunicado ?? base.categorias.comunicado,
+    },
+    destacado: cms.boletines.destacado ?? base.destacado,
+    acceso: { ...base.acceso, ...cms.acceso },
+    portal: { ...base.portal, ...cms.portal },
+    pqrsf: { ...base.pqrsf, ...cms.pqrsf },
+  }
+}
+
 const columnas = (cols: ColumnaCms[]) =>
   cols.map((c) => ({ title: c.titulo, links: c.enlaces.map((e) => e.etiqueta) }))
 
@@ -226,9 +317,18 @@ export async function fetchSiteContent(
 ): Promise<SiteContent> {
   const l = `locale=${locale}`
 
-  const [home, plataformas, servicios, operaciones, boletines, configuracion] = await Promise.all([
+  const [
+    home,
+    plataformas,
+    servicios,
+    operaciones,
+    boletines,
+    configuracion,
+    textos,
+    portal,
+  ] = await Promise.all([
     get<StrapiSingle<HomeCms>>(`/home?${l}&populate=*`, signal),
-    get<StrapiList<PlataformaCms>>(`/plataformas?${l}&sort=orden:asc`, signal),
+    get<StrapiList<PlataformaCms>>(`/plataformas?${l}&sort=orden:asc&populate=caracteristicas`, signal),
     get<StrapiList<ServicioCms>>(`/servicios?${l}&populate=enlaces&sort=orden:asc`, signal),
     get<StrapiList<OperacionCms>>(
       `/operaciones-mercado?pagination[pageSize]=100&sort=numeroNegocio:asc`,
@@ -236,13 +336,22 @@ export async function fetchSiteContent(
     ),
     get<StrapiList<BoletinCms>>(`/boletines?${l}&sort=fecha:desc&pagination[pageSize]=6`, signal),
     get<StrapiSingle<ConfiguracionCms>>(`/configuracion-sitio?${l}&${POPULATE_CONFIG}`, signal),
+    get<StrapiSingle<TextosCms>>(`/textos-interfaz?${l}&populate=*`, signal),
+    get<StrapiList<ComponentePortalCms>>(`/componentes-portal?${l}&sort=orden:asc`, signal),
   ])
 
   const h = home.data
   if (!h) throw new Error('El single type Home no tiene contenido publicado')
 
   const cfg = configuracion.data
-  const t = ui[locale]
+  const t = mapTextos(ui[locale], textos.data)
+
+  const guionPqrsf = Object.fromEntries(
+    (textos.data?.guionPqrsf ?? []).map((paso) => [paso.clave, paso.mensaje]),
+  )
+
+  // El interruptor `activa` del CMS decide qué plataformas se publican.
+  const plataformasActivas = plataformas.data.filter((p) => p.activa)
 
   return {
     source: 'cms',
@@ -250,7 +359,7 @@ export async function fetchSiteContent(
     ui: t,
     chrome: cfg
       ? {
-          utilityLinks: cfg.barraUtilidades.map((e) => e.etiqueta),
+          utilityLinks: cfg.barraUtilidades.map((e) => ({ label: e.etiqueta, url: e.url || '#' })),
           accessLabel: cfg.etiquetaAcceso,
           megaMenu: columnas(cfg.menuPrincipal),
           footerDescription: cfg.descripcionFooter,
@@ -270,7 +379,7 @@ export async function fetchSiteContent(
       subtitle: h.subtitulo,
       ctaPrimary: h.ctaPrimario,
       ctaSecondary: h.ctaSecundario ?? heroLocal.ctaSecondary,
-      platforms: plataformas.data.map((p) => ({
+      platforms: plataformasActivas.map((p) => ({
         title: p.titulo,
         body: p.descripcion,
         icon: p.icono,
@@ -309,6 +418,18 @@ export async function fetchSiteContent(
       nota: h.notaTablero,
     }),
     boletinesSection: { eyebrow: h.eyebrowBoletines, title: h.tituloBoletines },
+    plataformas: plataformasActivas.map((p) => ({
+      title: p.titulo,
+      slug: p.slug,
+      body: p.resumenDemo ?? p.descripcion,
+      icon: p.icono,
+      requiereSesion: p.requiereSesion,
+      caracteristicas: (p.caracteristicas ?? []).map((c) => c.texto),
+    })),
+    portal: portal.data
+      .filter((c) => c.activo)
+      .map(({ activo: _activo, ...c }) => c),
+    guionPqrsf,
     boletines: boletines.data,
   }
 }
