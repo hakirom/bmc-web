@@ -1,0 +1,86 @@
+/**
+ * Microcopy de interfaz: etiquetas que no son contenido editorial y por eso no
+ * viven en el CMS (cabeceras de tabla, botones de navegación, textos de ayuda).
+ * El contenido con valor editorial está en Strapi.
+ */
+
+export const ui = {
+  es: {
+    intlLocale: 'es-CO',
+    conocerMas: 'Conocer más',
+    verTodosServicios: 'Ver todos los servicios',
+    leerBoletin: 'Leer boletín',
+    anterior: 'Anterior',
+    siguiente: 'Siguiente',
+    plataformaAnterior: 'Plataformas anteriores',
+    plataformaSiguiente: 'Plataformas siguientes',
+    buscar: 'Buscar',
+    buscarPlaceholder: 'Buscar productos, mercados, boletines…',
+    abrirMenu: 'Abrir menú',
+    cerrarMenu: 'Cerrar menú',
+    cambiarIdioma: 'Cambiar idioma',
+    saltarContenido: 'Pasar al contenido principal',
+    mercadoFisicos: 'Mercado de físicos',
+    mercadoFinancieros: 'Mercado de financieros',
+    columnas: {
+      negocio: 'N° Negocio',
+      producto: 'Producto',
+      cantidad: 'Cantidad',
+      valor: 'Valor',
+      instrumento: 'Instrumento',
+      tasa: 'Tasa E.A.',
+    },
+    numeroOperaciones: 'Número operaciones',
+    valorNegociado: 'Valor negociado',
+    fechaCierre: 'Fecha del cierre',
+    categorias: {
+      'boletin-diario': 'Boletín diario',
+      'estudio-economico': 'Estudio económico',
+      comunicado: 'Comunicado',
+    } as Record<string, string>,
+    destacado: 'Destacado',
+    contenidoDesdeCms: 'Contenido servido por Strapi',
+    cmsNoDisponible: 'CMS no disponible — contenido local',
+    consultandoCms: 'Consultando el CMS…',
+  },
+  en: {
+    intlLocale: 'en-US',
+    conocerMas: 'Learn more',
+    verTodosServicios: 'See all services',
+    leerBoletin: 'Read bulletin',
+    anterior: 'Previous',
+    siguiente: 'Next',
+    plataformaAnterior: 'Previous platforms',
+    plataformaSiguiente: 'Next platforms',
+    buscar: 'Search',
+    buscarPlaceholder: 'Search products, markets, bulletins…',
+    abrirMenu: 'Open menu',
+    cerrarMenu: 'Close menu',
+    cambiarIdioma: 'Change language',
+    saltarContenido: 'Skip to main content',
+    mercadoFisicos: 'Physical market',
+    mercadoFinancieros: 'Financial market',
+    columnas: {
+      negocio: 'Trade no.',
+      producto: 'Product',
+      cantidad: 'Quantity',
+      valor: 'Value',
+      instrumento: 'Instrument',
+      tasa: 'Rate (EAR)',
+    },
+    numeroOperaciones: 'Number of transactions',
+    valorNegociado: 'Traded value',
+    fechaCierre: 'Session date',
+    categorias: {
+      'boletin-diario': 'Daily bulletin',
+      'estudio-economico': 'Economic study',
+      comunicado: 'Announcement',
+    } as Record<string, string>,
+    destacado: 'Featured',
+    contenidoDesdeCms: 'Content served by Strapi',
+    cmsNoDisponible: 'CMS unavailable — local content',
+    consultandoCms: 'Querying the CMS…',
+  },
+}
+
+export type UiStrings = (typeof ui)['es']

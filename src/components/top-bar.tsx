@@ -10,7 +10,7 @@ const IDIOMAS: { code: Locale; corto: string; largo: string }[] = [
 ]
 
 export function TopBar() {
-  const { chrome, locale, setLocale, loading } = useContent()
+  const { chrome, locale, setLocale, loading, ui: t } = useContent()
   const [open, setOpen] = useState(false)
   const activo = IDIOMAS.find((i) => i.code === locale) ?? IDIOMAS[0]!
 
@@ -28,7 +28,7 @@ export function TopBar() {
             type="button"
             aria-expanded={open}
             aria-haspopup="listbox"
-            aria-label="Cambiar idioma"
+            aria-label={t.cambiarIdioma}
             onClick={() => setOpen((v) => !v)}
             className="flex items-center gap-1 rounded px-2 py-1 text-white/75 transition-colors hover:bg-white/10 hover:text-white"
           >

@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 import { useContent } from '@/lib/content-context'
 
 export function MarketBoard() {
-  const { marketBoard } = useContent()
+  const { marketBoard, ui: t } = useContent()
   const [tab, setTab] = useState(0)
   const active = marketBoard.tabs[tab] ?? marketBoard.tabs[0]!
 
@@ -32,7 +32,7 @@ export function MarketBoard() {
 
               <label className="mt-4 flex items-center gap-2 rounded border border-white/25 bg-white/5 px-3 py-2 text-sm">
                 <CalendarDays size={15} className="text-white/60" aria-hidden="true" />
-                <span className="sr-only">Fecha del cierre</span>
+                <span className="sr-only">{t.fechaCierre}</span>
                 <input
                   type="text"
                   defaultValue={marketBoard.date}

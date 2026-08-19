@@ -5,7 +5,7 @@ import { useContent } from '@/lib/content-context'
 import { BmcLogo } from './bmc-logo'
 
 export function Navbar() {
-  const { chrome } = useContent()
+  const { chrome, ui: t } = useContent()
   const [menuOpen, setMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -50,7 +50,7 @@ export function Navbar() {
           </a>
           <button
             type="button"
-            aria-label="Buscar en el sitio"
+            aria-label={t.buscar}
             aria-expanded={searchOpen}
             onClick={() => setSearchOpen((v) => !v)}
             className="rounded-md p-2 text-white/85 transition-colors hover:bg-white/10 hover:text-white"
@@ -59,7 +59,7 @@ export function Navbar() {
           </button>
           <button
             type="button"
-            aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            aria-label={menuOpen ? t.cerrarMenu : t.abrirMenu}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
             className="rounded-md p-2 text-white transition-colors hover:bg-white/10"
@@ -80,15 +80,15 @@ export function Navbar() {
             <input
               autoFocus
               type="search"
-              placeholder="Buscar productos, mercados, boletines…"
-              aria-label="Buscar"
+              placeholder={t.buscarPlaceholder}
+              aria-label={t.buscar}
               className="w-full bg-transparent py-1 text-white placeholder:text-white/45 focus:outline-none"
             />
             <button
               type="submit"
               className="rounded-md bg-azure px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-azure-light"
             >
-              Buscar
+              {t.buscar}
             </button>
           </form>
         </div>

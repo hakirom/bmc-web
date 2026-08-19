@@ -22,7 +22,7 @@ function useVisibleCount() {
 }
 
 export function Hero() {
-  const { hero } = useContent()
+  const { hero, ui: t } = useContent()
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
   const visible = useVisibleCount()
@@ -86,17 +86,17 @@ export function Hero() {
           onFocusCapture={() => setPaused(true)}
           onBlurCapture={() => setPaused(false)}
           aria-roledescription="carrusel"
-          aria-label="Nuestras plataformas"
+          aria-label={hero.platformsLabel}
         >
           <div className="flex items-center justify-between gap-4">
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-white/60">
-              Nuestras plataformas
+              {hero.platformsLabel}
             </p>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => go(-1)}
-                aria-label="Plataformas anteriores"
+                aria-label={t.plataformaAnterior}
                 className="rounded-full border border-white/35 p-2 text-white transition-colors hover:bg-white hover:text-navy"
               >
                 <ChevronLeft size={16} aria-hidden="true" />
@@ -104,7 +104,7 @@ export function Hero() {
               <button
                 type="button"
                 onClick={() => go(1)}
-                aria-label="Plataformas siguientes"
+                aria-label={t.plataformaSiguiente}
                 className="rounded-full border border-white/35 p-2 text-white transition-colors hover:bg-white hover:text-navy"
               >
                 <ChevronRight size={16} aria-hidden="true" />
@@ -133,7 +133,7 @@ export function Hero() {
                       href="#"
                       className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-azure-light hover:underline"
                     >
-                      Conocer más
+                      {t.conocerMas}
                       <ArrowRight size={14} aria-hidden="true" />
                     </a>
                   </article>

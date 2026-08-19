@@ -43,7 +43,7 @@ function ServiceCard({ group, delay }: { group: ServiceGroup; delay: number }) {
 }
 
 export function Services() {
-  const { servicesSection } = useContent()
+  const { servicesSection, ui: t } = useContent()
 
   return (
     <section id="servicios" className="border-b border-line bg-sand py-20">
@@ -64,7 +64,7 @@ export function Services() {
           href="#"
           className="mt-10 inline-flex items-center gap-2 rounded-md bg-navy px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-navy-600"
         >
-          Ver todos los servicios
+          {t.verTodosServicios}
           <ArrowRight size={16} aria-hidden="true" />
         </a>
       </div>

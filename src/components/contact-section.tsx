@@ -41,7 +41,7 @@ export function ContactSection() {
   return (
     <section id="contacto" className="bg-tint py-20">
       <div className="container-page">
-        <SectionHeading eyebrow={contact.eyebrow} title="Estamos para atenderle" />
+        <SectionHeading eyebrow={contact.eyebrow} title={contact.title} />
         <div className="mt-12 grid gap-5 md:grid-cols-3">
           {contact.cards.map((card, i) => (
             <ContactCard key={card.title} card={card} delay={i * 90} />

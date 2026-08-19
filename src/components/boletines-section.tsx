@@ -3,28 +3,21 @@ import { useContent } from '@/lib/content-context'
 import { useReveal } from '@/lib/use-reveal'
 import { SectionHeading } from './section-heading'
 
-const etiquetas: Record<string, string> = {
-  'boletin-diario': 'Boletín diario',
-  'estudio-economico': 'Estudio económico',
-  comunicado: 'Comunicado',
-}
-
-const fechaLarga = new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })
+const OPCIONES_FECHA: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' }
 
 /** Se alimenta de la colección Boletín de Strapi; si el CMS no responde, no se renderiza. */
 export function BoletinesSection() {
-  const { boletines } = useContent()
+  const { boletines, boletinesSection, ui: t } = useContent()
   const reveal = useReveal<HTMLDivElement>()
+
+  const fechaLarga = new Intl.DateTimeFormat(t.intlLocale, OPCIONES_FECHA)
 
   if (boletines.length === 0) return null
 
   return (
     <section id="boletines" className="border-b border-line bg-white py-20">
       <div className="container-page">
-        <SectionHeading
-          eyebrow="Boletines del mercado"
-          title="Información y análisis para decidir a tiempo"
-        />
+        <SectionHeading eyebrow={boletinesSection.eyebrow} title={boletinesSection.title} />
 
         <div
           ref={reveal.ref}
@@ -41,11 +34,11 @@ export function BoletinesSection() {
                   <FileText size={17} aria-hidden="true" />
                 </span>
                 <span className="rounded-full bg-tint px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-navy-600">
-                  {etiquetas[boletin.categoria] ?? boletin.categoria}
+                  {t.categorias[boletin.categoria] ?? boletin.categoria}
                 </span>
                 {boletin.destacado ? (
                   <span className="rounded-full bg-azure px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
-                    Destacado
+                    {t.destacado}
                   </span>
                 ) : null}
               </div>
@@ -60,7 +53,7 @@ export function BoletinesSection() {
                 href="#"
                 className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-semibold text-azure hover:underline"
               >
-                Leer boletín
+                {t.leerBoletin}
                 <ArrowRight size={14} aria-hidden="true" />
               </a>
             </article>

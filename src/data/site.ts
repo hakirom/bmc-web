@@ -64,6 +64,7 @@ export const hero = {
     'Contribuimos al desarrollo sostenible y generamos valor al país promoviendo, facilitando y administrando mercados eficientes y financiación no bancaria a través de:',
   ctaPrimary: 'Conozca nuestros mercados',
   ctaSecondary: 'Acceso a plataformas',
+  platformsLabel: 'Nuestras plataformas',
   platforms: [
     {
       title: 'Plataforma de Negociación',
@@ -193,6 +194,7 @@ export const stats = [
 
 export const contact = {
   eyebrow: 'Contáctenos',
+  title: 'Estamos para atenderle',
   cards: [
     {
       title: 'Contáctenos',

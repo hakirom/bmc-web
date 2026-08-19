@@ -5,7 +5,7 @@ import { useContent } from '@/lib/content-context'
 import { SectionHeading } from './section-heading'
 
 export function ValueCarousel() {
-  const { valueSection } = useContent()
+  const { valueSection, ui: t } = useContent()
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
   const total = valueSection.slides.length
@@ -54,7 +54,7 @@ export function ValueCarousel() {
             <button
               type="button"
               onClick={() => go(-1)}
-              aria-label="Anterior"
+              aria-label={t.anterior}
               className="rounded-full border border-line p-2 text-navy transition-colors hover:border-navy hover:bg-navy hover:text-white"
             >
               <ChevronLeft size={16} aria-hidden="true" />
@@ -79,7 +79,7 @@ export function ValueCarousel() {
             <button
               type="button"
               onClick={() => go(1)}
-              aria-label="Siguiente"
+              aria-label={t.siguiente}
               className="rounded-full border border-line p-2 text-navy transition-colors hover:border-navy hover:bg-navy hover:text-white"
             >
               <ChevronRight size={16} aria-hidden="true" />
