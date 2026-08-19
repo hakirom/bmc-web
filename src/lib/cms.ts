@@ -5,12 +5,31 @@
  */
 import {
   contact as contactoLocal,
+  footer as footerLocal,
   hero as heroLocal,
   marketBoard as marketBoardLocal,
+  megaMenu as megaMenuLocal,
   servicesSection as serviciosLocal,
   stats as statsLocal,
+  utilityLinks as utilidadesLocal,
   valueSection as valorLocal,
 } from '@/data/site'
+
+export type Locale = 'es' | 'en'
+
+/** Navegación, pie de página e institucional: lo que rodea al contenido. */
+export type SiteChrome = {
+  utilityLinks: string[]
+  accessLabel: string
+  megaMenu: { title: string; links: string[] }[]
+  footerDescription: string
+  footerColumns: { title: string; links: string[] }[]
+  socials: string[]
+  certifications: { label: string; code: string }[]
+  supervision: string
+  listed: string
+  legal: string
+}
 
 export const CMS_URL = import.meta.env.VITE_CMS_URL ?? 'http://localhost:1337'
 
@@ -52,6 +71,22 @@ export type BoletinCms = {
   destacado: boolean
 }
 
+type EnlaceCms = { etiqueta: string; url: string }
+type ColumnaCms = { titulo: string; enlaces: EnlaceCms[] }
+
+type ConfiguracionCms = {
+  barraUtilidades: EnlaceCms[]
+  etiquetaAcceso: string
+  menuPrincipal: ColumnaCms[]
+  descripcionFooter: string
+  columnasFooter: ColumnaCms[]
+  redesSociales: EnlaceCms[]
+  certificaciones: { etiqueta: string; codigo: string }[]
+  vigilancia: string
+  listadoEn: string
+  legal: string
+}
+
 type HomeCms = {
   eyebrow: string
   titulo: string
@@ -69,6 +104,8 @@ type HomeCms = {
 /** Contenido que consume la UI, con la misma forma que el fallback local. */
 export type SiteContent = {
   source: 'cms' | 'local'
+  locale: Locale
+  chrome: SiteChrome
   hero: typeof heroLocal
   servicesSection: typeof serviciosLocal
   valueSection: typeof valorLocal
@@ -78,8 +115,24 @@ export type SiteContent = {
   boletines: BoletinCms[]
 }
 
+const chromeLocal: SiteChrome = {
+  utilityLinks: utilidadesLocal,
+  accessLabel: 'Acceso',
+  megaMenu: megaMenuLocal.map((c) => ({ title: c.title, links: [...c.links] })),
+  footerDescription:
+    'Bolsa de productos y servicios de Colombia. Mercados eficientes, transparentes y seguros.',
+  footerColumns: footerLocal.columns,
+  socials: footerLocal.socials,
+  certifications: footerLocal.certifications.map((c) => ({ label: c.label, code: c.value })),
+  supervision: footerLocal.supervision,
+  listed: footerLocal.listed,
+  legal: footerLocal.legal,
+}
+
 export const localContent: SiteContent = {
   source: 'local',
+  locale: 'es',
+  chrome: chromeLocal,
   hero: heroLocal,
   servicesSection: serviciosLocal,
   valueSection: valorLocal,
@@ -132,21 +185,58 @@ function mapMarketBoard(operaciones: OperacionCms[]): SiteContent['marketBoard']
   }
 }
 
-/** Trae todo el contenido del CMS. Lanza si Strapi no está disponible. */
-export async function fetchSiteContent(signal?: AbortSignal): Promise<SiteContent> {
-  const [home, plataformas, servicios, operaciones, boletines] = await Promise.all([
-    get<StrapiSingle<HomeCms>>('/home?populate=*', signal),
-    get<StrapiList<PlataformaCms>>('/plataformas?sort=orden:asc', signal),
-    get<StrapiList<ServicioCms>>('/servicios?populate=enlaces&sort=orden:asc', signal),
-    get<StrapiList<OperacionCms>>('/operaciones-mercado?pagination[pageSize]=100&sort=numeroNegocio:asc', signal),
-    get<StrapiList<BoletinCms>>('/boletines?sort=fecha:desc&pagination[pageSize]=6', signal),
+const POPULATE_CONFIG = [
+  'populate[barraUtilidades]=true',
+  'populate[redesSociales]=true',
+  'populate[certificaciones]=true',
+  'populate[menuPrincipal][populate][enlaces]=true',
+  'populate[columnasFooter][populate][enlaces]=true',
+].join('&')
+
+const columnas = (cols: ColumnaCms[]) =>
+  cols.map((c) => ({ title: c.titulo, links: c.enlaces.map((e) => e.etiqueta) }))
+
+/** Trae todo el contenido del CMS en un idioma. Lanza si Strapi no responde. */
+export async function fetchSiteContent(
+  locale: Locale = 'es',
+  signal?: AbortSignal,
+): Promise<SiteContent> {
+  const l = `locale=${locale}`
+
+  const [home, plataformas, servicios, operaciones, boletines, configuracion] = await Promise.all([
+    get<StrapiSingle<HomeCms>>(`/home?${l}&populate=*`, signal),
+    get<StrapiList<PlataformaCms>>(`/plataformas?${l}&sort=orden:asc`, signal),
+    get<StrapiList<ServicioCms>>(`/servicios?${l}&populate=enlaces&sort=orden:asc`, signal),
+    get<StrapiList<OperacionCms>>(
+      `/operaciones-mercado?pagination[pageSize]=100&sort=numeroNegocio:asc`,
+      signal,
+    ),
+    get<StrapiList<BoletinCms>>(`/boletines?${l}&sort=fecha:desc&pagination[pageSize]=6`, signal),
+    get<StrapiSingle<ConfiguracionCms>>(`/configuracion-sitio?${l}&${POPULATE_CONFIG}`, signal),
   ])
 
   const h = home.data
   if (!h) throw new Error('El single type Home no tiene contenido publicado')
 
+  const cfg = configuracion.data
+
   return {
     source: 'cms',
+    locale,
+    chrome: cfg
+      ? {
+          utilityLinks: cfg.barraUtilidades.map((e) => e.etiqueta),
+          accessLabel: cfg.etiquetaAcceso,
+          megaMenu: columnas(cfg.menuPrincipal),
+          footerDescription: cfg.descripcionFooter,
+          footerColumns: columnas(cfg.columnasFooter),
+          socials: cfg.redesSociales.map((e) => e.etiqueta),
+          certifications: cfg.certificaciones.map((c) => ({ label: c.etiqueta, code: c.codigo })),
+          supervision: cfg.vigilancia,
+          listed: cfg.listadoEn,
+          legal: cfg.legal,
+        }
+      : chromeLocal,
     hero: {
       ...heroLocal,
       eyebrow: h.eyebrow,

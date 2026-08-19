@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Menu, Search, UserRound, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { megaMenu, utilityLinks } from '@/data/site'
+import { useContent } from '@/lib/content-context'
 import { BmcLogo } from './bmc-logo'
 
 export function Navbar() {
+  const { chrome } = useContent()
   const [menuOpen, setMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -45,7 +46,7 @@ export function Navbar() {
             className="inline-flex items-center gap-2 rounded-md border border-white/45 px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-navy"
           >
             <UserRound size={16} aria-hidden="true" />
-            Acceso
+            {chrome.accessLabel}
           </a>
           <button
             type="button"
@@ -96,7 +97,7 @@ export function Navbar() {
       {menuOpen ? (
         <div className="max-h-[calc(100vh-70px)] overflow-y-auto border-t border-line-dark bg-navy-800">
           <div className="container-page grid gap-8 py-8 md:grid-cols-2 lg:grid-cols-4">
-            {megaMenu.map((col) => (
+            {chrome.megaMenu.map((col) => (
               <div key={col.title}>
                 <p className="border-b border-line-dark pb-2 text-xs font-bold uppercase tracking-[0.14em] text-azure-light">
                   {col.title}
@@ -119,7 +120,7 @@ export function Navbar() {
 
           <div className="border-t border-line-dark lg:hidden">
             <ul className="container-page flex flex-wrap gap-x-5 gap-y-2 py-4 text-sm">
-              {utilityLinks.map((link) => (
+              {chrome.utilityLinks.map((link) => (
                 <li key={link}>
                   <a href="#" className="text-white/70 hover:text-white">
                     {link}
