@@ -190,7 +190,17 @@ export const localContent: SiteContent = {
   locale: 'es',
   chrome: chromeLocal,
   ui: ui.es,
-  plataformas: [],
+  // Derivado del hero local: permite abrir el panel de cada plataforma aunque
+  // el CMS no responda. El portal queda vacío a propósito — sus componentes
+  // solo existen en Strapi y el badge avisa de que no hay conexión.
+  plataformas: heroLocal.platforms.map((p) => ({
+    title: p.title,
+    slug: p.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+    body: p.body,
+    icon: p.icon,
+    requiereSesion: false,
+    caracteristicas: [],
+  })),
   portal: [],
   guionPqrsf: {},
   hero: heroLocal,
