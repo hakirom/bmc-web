@@ -64,8 +64,13 @@ type OperacionCms = {
   tipoMercado: 'fisicos' | 'financieros'
   concepto: string
   cantidad: string | null
-  valor: number
-  tasa: number | null
+  /**
+   * Los campos `decimal` llegan como número con SQLite y como cadena con
+   * Postgres: el driver `pg` mapea `numeric` a string para no perder
+   * precisión. Se normalizan con `aNumero()` antes de usarlos.
+   */
+  valor: number | string
+  tasa: number | string | null
   fecha: string
 }
 
@@ -222,6 +227,11 @@ async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
   return (await res.json()) as T
 }
 
+const aNumero = (valor: number | string | null | undefined) => {
+  const n = typeof valor === 'number' ? valor : Number(valor)
+  return Number.isFinite(n) ? n : 0
+}
+
 function mapMarketBoard(
   operaciones: OperacionCms[],
   t: UiStrings,
@@ -234,7 +244,7 @@ function mapMarketBoard(
 
   const fisicos = operaciones.filter((o) => o.tipoMercado === 'fisicos')
   const financieros = operaciones.filter((o) => o.tipoMercado === 'financieros')
-  const total = operaciones.reduce((sum, o) => sum + Number(o.valor), 0)
+  const total = operaciones.reduce((sum, o) => sum + aNumero(o.valor), 0)
   const fecha = operaciones[0]?.fecha
 
   return {
@@ -250,7 +260,12 @@ function mapMarketBoard(
       {
         label: t.mercadoFisicos,
         columns: [t.columnas.negocio, t.columnas.producto, t.columnas.cantidad, t.columnas.valor],
-        rows: fisicos.map((o) => [o.numeroNegocio, o.concepto, o.cantidad ?? '—', formatoPesos(o.valor)]),
+        rows: fisicos.map((o) => [
+          o.numeroNegocio,
+          o.concepto,
+          o.cantidad ?? '—',
+          formatoPesos(aNumero(o.valor)),
+        ]),
       },
       {
         label: t.mercadoFinancieros,
@@ -258,8 +273,8 @@ function mapMarketBoard(
         rows: financieros.map((o) => [
           o.numeroNegocio,
           o.concepto,
-          formatoPesos(o.valor),
-          o.tasa != null ? formatoTasa(Number(o.tasa)) : '—',
+          formatoPesos(aNumero(o.valor)),
+          o.tasa != null ? formatoTasa(aNumero(o.tasa)) : '—',
         ]),
       },
     ],
