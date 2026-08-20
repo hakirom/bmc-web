@@ -1,5 +1,5 @@
 {
-  "name": "bmc-demo",
+  "name": "bmc-web",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -27,5 +27,6 @@
     "tailwindcss": "^4.2.0",
     "typescript": "~5.7.3",
     "vite": "^6.0.0"
-  }
+  },
+  "description": "Front-end de la demo BMC: Vite + React 19 + Tailwind, consume la API de Strapi"
 }
