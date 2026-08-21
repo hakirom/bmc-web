@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useContent } from '@/lib/content-context'
+import { EnlaceUi } from './enlace-ui'
 import { Icon } from './icon'
 import { PlataformaPanel } from './plataforma-detalle'
 
@@ -67,19 +67,19 @@ export function Hero() {
         </p>
 
         <div className="mt-7 flex flex-wrap gap-3">
-          <a
-            href="#servicios"
+          <EnlaceUi
+            url={hero.ctaPrimary.url}
             className="inline-flex items-center gap-2 rounded-md bg-surface px-5 py-2.5 text-sm font-semibold text-heading transition-colors hover:bg-tint"
           >
-            {hero.ctaPrimary}
+            {hero.ctaPrimary.label}
             <ArrowRight size={16} aria-hidden="true" />
-          </a>
-          <Link
-            to="/acceso"
+          </EnlaceUi>
+          <EnlaceUi
+            url={hero.ctaSecondary.url}
             className="inline-flex items-center gap-2 rounded-md border border-white/50 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/10"
           >
-            {hero.ctaSecondary}
-          </Link>
+            {hero.ctaSecondary.label}
+          </EnlaceUi>
         </div>
 
         <div

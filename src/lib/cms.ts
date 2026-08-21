@@ -21,6 +21,19 @@ export type Locale = 'es' | 'en'
 /** Navegación, pie de página e institucional: lo que rodea al contenido. */
 export type EnlaceUi = { label: string; url: string }
 
+/** Botón con destino editable desde el CMS. */
+export type Accion = { label: string; url: string }
+
+export type PanelIndicadores = {
+  titulo: string
+  descripcion: string
+  fuente: string
+  actualizado: string
+  enlace: Accion | null
+}
+
+export type Indicador = { value: string; label: string; tendencia: string; progreso: number }
+
 export type SiteChrome = {
   utilityLinks: EnlaceUi[]
   accessLabel: string
@@ -138,21 +151,28 @@ type HomeCms = {
   eyebrow: string
   titulo: string
   subtitulo: string
-  ctaPrimario: string
-  ctaSecundario: string | null
+  ctaPrimario: EnlaceCms | null
+  ctaSecundario: EnlaceCms | null
   tituloServicios: string
   introServicios: string
   tituloValor: string
   etiquetaPlataformas: string
   tituloTablero: string
-  ctaTablero: string
+  ctaTablero: EnlaceCms | null
   notaTablero: string
   eyebrowBoletines: string
   tituloBoletines: string
   eyebrowContacto: string
   tituloContacto: string
   seo: { metaTitulo: string; metaDescripcion: string; palabrasClave: string | null } | null
-  cifras: { valor: string; etiqueta: string }[]
+  cifras: { valor: string; etiqueta: string; tendencia: string | null; progreso: number | null }[]
+  panelCifras: {
+    titulo: string
+    descripcion: string | null
+    fuente: string
+    actualizado: string | null
+    enlaceInforme: EnlaceCms | null
+  } | null
   mensajesValor: { texto: string }[]
   tarjetasContacto: { titulo: string; icono: string; lineas: string; cta: string | null }[]
 }
@@ -172,9 +192,10 @@ export type SiteContent = {
   hero: typeof heroLocal
   servicesSection: typeof serviciosLocal
   valueSection: typeof valorLocal
-  stats: typeof statsLocal
+  stats: Indicador[]
+  panelIndicadores: PanelIndicadores
   contact: typeof contactoLocal
-  marketBoard: typeof marketBoardLocal
+  marketBoard: Omit<typeof marketBoardLocal, 'cta'> & { cta: Accion }
   boletinesSection: { eyebrow: string; title: string }
   boletines: BoletinCms[]
 }
@@ -215,9 +236,16 @@ export const localContent: SiteContent = {
   hero: heroLocal,
   servicesSection: serviciosLocal,
   valueSection: valorLocal,
-  stats: statsLocal,
+  stats: statsLocal.map((s) => ({ ...s, tendencia: '', progreso: 60 })),
+  panelIndicadores: {
+    titulo: 'Indicadores de la BMC',
+    descripcion: 'Consolidado institucional del último cierre',
+    fuente: 'Power BI',
+    actualizado: '',
+    enlace: null,
+  },
   contact: contactoLocal,
-  marketBoard: marketBoardLocal,
+  marketBoard: { ...marketBoardLocal, cta: { label: marketBoardLocal.cta, url: '/portal' } },
   boletinesSection: {
     eyebrow: 'Boletines del mercado',
     title: 'Información y análisis para decidir a tiempo',
@@ -239,7 +267,7 @@ const aNumero = (valor: number | string | null | undefined) => {
 function mapMarketBoard(
   operaciones: OperacionCms[],
   t: UiStrings,
-  etiquetas: { titulo: string; cta: string; nota: string },
+  etiquetas: { titulo: string; cta: Accion; nota: string },
 ): SiteContent['marketBoard'] {
   const numeros = new Intl.NumberFormat(t.intlLocale, { maximumFractionDigits: 0 })
   const formatoPesos = (valor: number) => `$ ${numeros.format(valor)}`
@@ -284,6 +312,21 @@ function mapMarketBoard(
     ],
   }
 }
+
+/**
+ * `populate=*` solo alcanza el primer nivel, así que el enlace que vive dentro
+ * del panel de indicadores hay que pedirlo de forma explícita.
+ */
+const POPULATE_HOME = [
+  'populate[cifras]=true',
+  'populate[mensajesValor]=true',
+  'populate[tarjetasContacto]=true',
+  'populate[seo]=true',
+  'populate[ctaPrimario]=true',
+  'populate[ctaSecundario]=true',
+  'populate[ctaTablero]=true',
+  'populate[panelCifras][populate][enlaceInforme]=true',
+].join('&')
 
 const POPULATE_CONFIG = [
   'populate[barraUtilidades]=true',
@@ -345,6 +388,12 @@ function mapTextos(base: UiStrings, cms: TextosCms | null): UiStrings {
   }
 }
 
+/** Un enlace del CMS; si falta, se usa la etiqueta y el destino de reserva. */
+const accion = (e: EnlaceCms | null, etiqueta: string, url = '#'): Accion => ({
+  label: e?.etiqueta || etiqueta,
+  url: e?.url || url,
+})
+
 const columnas = (cols: ColumnaCms[]) =>
   cols.map((c) => ({ title: c.titulo, links: c.enlaces.map((e) => e.etiqueta) }))
 
@@ -365,7 +414,7 @@ export async function fetchSiteContent(
     textos,
     portal,
   ] = await Promise.all([
-    get<StrapiSingle<HomeCms>>(`/home?${l}&populate=*`, signal),
+    get<StrapiSingle<HomeCms>>(`/home?${l}&${POPULATE_HOME}`, signal),
     get<StrapiList<PlataformaCms>>(`/plataformas?${l}&sort=orden:asc&populate=caracteristicas`, signal),
     get<StrapiList<ServicioCms>>(`/servicios?${l}&populate=enlaces&sort=orden:asc`, signal),
     get<StrapiList<OperacionCms>>(
@@ -415,8 +464,8 @@ export async function fetchSiteContent(
       eyebrow: h.eyebrow,
       title: h.titulo,
       subtitle: h.subtitulo,
-      ctaPrimary: h.ctaPrimario,
-      ctaSecondary: h.ctaSecundario ?? heroLocal.ctaSecondary,
+      ctaPrimary: accion(h.ctaPrimario, heroLocal.ctaPrimary.label, '/portal'),
+      ctaSecondary: accion(h.ctaSecundario, heroLocal.ctaSecondary.label, '/acceso'),
       platforms: plataformasActivas.map((p) => ({
         title: p.titulo,
         body: p.descripcion,
@@ -438,7 +487,21 @@ export async function fetchSiteContent(
       eyebrow: h.tituloValor,
       slides: h.mensajesValor.map((m) => m.texto),
     },
-    stats: h.cifras.map((c) => ({ value: c.valor, label: c.etiqueta })),
+    stats: h.cifras.map((c) => ({
+      value: c.valor,
+      label: c.etiqueta,
+      tendencia: c.tendencia ?? '',
+      progreso: c.progreso ?? 60,
+    })),
+    panelIndicadores: {
+      titulo: h.panelCifras?.titulo ?? localContent.panelIndicadores.titulo,
+      descripcion: h.panelCifras?.descripcion ?? '',
+      fuente: h.panelCifras?.fuente ?? 'Power BI',
+      actualizado: h.panelCifras?.actualizado ?? '',
+      enlace: h.panelCifras?.enlaceInforme
+        ? accion(h.panelCifras.enlaceInforme, '')
+        : null,
+    },
     contact: {
       ...contactoLocal,
       eyebrow: h.eyebrowContacto,
@@ -452,7 +515,7 @@ export async function fetchSiteContent(
     },
     marketBoard: mapMarketBoard(operaciones.data, t, {
       titulo: h.tituloTablero,
-      cta: h.ctaTablero,
+      cta: accion(h.ctaTablero, marketBoardLocal.cta, '/portal'),
       nota: h.notaTablero,
     }),
     boletinesSection: { eyebrow: h.eyebrowBoletines, title: h.tituloBoletines },

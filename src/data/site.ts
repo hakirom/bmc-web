@@ -62,8 +62,8 @@ export const hero = {
   title: 'Somos la bolsa de productos y servicios de Colombia.',
   subtitle:
     'Contribuimos al desarrollo sostenible y generamos valor al país promoviendo, facilitando y administrando mercados eficientes y financiación no bancaria a través de:',
-  ctaPrimary: 'Conozca nuestros mercados',
-  ctaSecondary: 'Acceso a plataformas',
+  ctaPrimary: { label: 'Conozca nuestros mercados', url: '/portal' },
+  ctaSecondary: { label: 'Acceso a plataformas', url: '/acceso' },
   platformsLabel: 'Nuestras plataformas',
   platforms: [
     {

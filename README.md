@@ -55,6 +55,18 @@ Dos tokens tienen el papel separado a propósito: `navy` es el color institucion
 fondo (cabecera y pie siguen siendo azul oscuro en ambos temas), mientras que `surface`
 y `heading` son los que cambian.
 
+## Botones y panel de indicadores
+
+Los CTA del hero y del tablero son **enlaces del CMS**: etiqueta y destino se editan en
+Home. Por defecto el principal lleva al portal y el secundario al acceso, pero se cambian
+sin tocar código. Rutas internas (`/portal`) usan el enrutador; anclas y destinos externos
+se resuelven como enlace normal.
+
+La franja de cifras es un **panel embebido que simula un informe de Power BI**: marco
+propio, barra con el origen y la marca de actualización, indicadores con tendencia y barra
+de progreso. Los datos salen del CMS y no hay ninguna llamada externa; para conectar el
+informe real basta con sustituir el contenido del marco por su iframe.
+
 ## De dónde sale el contenido
 
 - `src/lib/cms.ts` — cliente REST; mapea la respuesta de Strapi a las formas que usa la UI.

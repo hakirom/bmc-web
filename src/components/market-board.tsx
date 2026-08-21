@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ArrowRight, CalendarDays, Info } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useContent } from '@/lib/content-context'
+import { EnlaceUi } from './enlace-ui'
 
 export function MarketBoard() {
   const { marketBoard, ui: t } = useContent()
@@ -50,13 +51,13 @@ export function MarketBoard() {
                 ))}
               </dl>
 
-              <a
-                href="#"
+              <EnlaceUi
+                url={marketBoard.cta.url}
                 className="mt-5 inline-flex w-full items-center justify-between gap-2 rounded bg-azure px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-azure-light"
               >
-                {marketBoard.cta}
+                {marketBoard.cta.label}
                 <ArrowRight size={15} aria-hidden="true" />
-              </a>
+              </EnlaceUi>
             </div>
 
             {/* Tablero */}
