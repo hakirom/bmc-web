@@ -104,7 +104,10 @@
       transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .reveal-in {
+  /* Doble clase a propósito: Tailwind reordena las utilidades dentro de la
+     capa, así que depender de que esta regla vaya después de `.reveal` no es
+     fiable. Con mayor especificidad gana siempre y el contenido se ve. */
+  .reveal.reveal-in {
     opacity: 1;
     transform: none;
   }
