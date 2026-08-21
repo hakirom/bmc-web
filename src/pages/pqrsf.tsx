@@ -143,10 +143,10 @@ export function PqrsfPage() {
       </header>
 
       <main className="container-page flex w-full max-w-3xl flex-1 flex-col py-10">
-        <h1 className="text-2xl font-bold text-navy">{t.pqrsf.titulo}</h1>
+        <h1 className="text-2xl font-bold text-heading">{t.pqrsf.titulo}</h1>
         <p className="mt-1 text-sm text-muted">{t.pqrsf.subtitulo}</p>
 
-        <div className="mt-6 flex flex-1 flex-col overflow-hidden rounded-lg border border-line bg-white">
+        <div className="mt-6 flex flex-1 flex-col overflow-hidden rounded-lg border border-line bg-surface">
           <ul className="flex-1 space-y-4 overflow-y-auto p-5" aria-live="polite">
             {mensajes.map((m, i) => (
               <li
@@ -156,7 +156,7 @@ export function PqrsfPage() {
                 <span
                   className={cn(
                     'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
-                    m.de === 'asistente' ? 'bg-navy text-white' : 'bg-tint text-navy',
+                    m.de === 'asistente' ? 'bg-navy text-white' : 'bg-tint text-heading',
                   )}
                 >
                   {m.de === 'asistente' ? <Bot size={16} aria-hidden="true" /> : <User size={16} aria-hidden="true" />}
@@ -208,7 +208,7 @@ export function PqrsfPage() {
                   key={opcion.valor}
                   type="button"
                   onClick={() => void enviar(opcion.valor)}
-                  className="rounded-full border border-azure/40 bg-tint px-3.5 py-1.5 text-sm font-semibold text-navy transition-colors hover:border-azure hover:bg-azure hover:text-white"
+                  className="rounded-full border border-azure/40 bg-tint px-3.5 py-1.5 text-sm font-semibold text-heading transition-colors hover:border-azure hover:bg-azure hover:text-white"
                 >
                   {opcion.etiqueta}
                 </button>

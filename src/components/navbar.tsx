@@ -4,6 +4,7 @@ import { Menu, Search, UserRound, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useContent } from '@/lib/content-context'
 import { EnlaceUi } from './enlace-ui'
+import { TemaToggle } from './tema-toggle'
 import { BmcLogo } from './bmc-logo'
 
 export function Navbar() {
@@ -37,8 +38,8 @@ export function Navbar() {
         scrolled || menuOpen ? 'bg-navy shadow-lg shadow-navy-900/20' : 'bg-navy/85 backdrop-blur-sm',
       )}
     >
-      <nav className="container-page flex h-[70px] items-center gap-4" aria-label="Principal">
-        <a href="#top" aria-label="Bolsa Mercantil de Colombia — inicio" className="shrink-0">
+      <nav className="container-page flex h-[70px] items-center gap-4" aria-label={t.navegacionPrincipal}>
+        <a href="#top" aria-label={t.irAlInicio} className="shrink-0">
           <BmcLogo dark />
         </a>
 
@@ -50,6 +51,7 @@ export function Navbar() {
             <UserRound size={16} aria-hidden="true" />
             {chrome.accessLabel}
           </Link>
+          <TemaToggle className="text-white/85 hover:text-white lg:hidden" />
           <button
             type="button"
             aria-label={t.buscar}

@@ -13,12 +13,12 @@ function ServiceCard({ group, delay }: { group: ServiceGroup; delay: number }) {
     <article
       ref={reveal.ref}
       style={reveal.style}
-      className={`${reveal.className} flex h-full flex-col rounded-lg border border-line bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-azure/50 hover:shadow-[0_20px_45px_-30px_rgba(1,51,101,0.6)]`}
+      className={`${reveal.className} flex h-full flex-col rounded-lg border border-line bg-surface p-6 transition-all duration-300 hover:-translate-y-1 hover:border-azure/50 hover:shadow-[0_20px_45px_-30px_rgba(1,51,101,0.6)]`}
     >
-      <span className="inline-flex h-12 w-12 items-center justify-center rounded-md bg-tint text-navy">
+      <span className="inline-flex h-12 w-12 items-center justify-center rounded-md bg-tint text-heading">
         <Icon name={group.icon} size={24} />
       </span>
-      <h3 className="mt-4 text-lg font-bold leading-snug text-navy">{group.title}</h3>
+      <h3 className="mt-4 text-lg font-bold leading-snug text-heading">{group.title}</h3>
       <p className="mt-3 text-sm leading-relaxed text-muted">{group.body}</p>
 
       <ul className="mt-5 space-y-1.5 border-t border-line pt-4">
@@ -26,7 +26,7 @@ function ServiceCard({ group, delay }: { group: ServiceGroup; delay: number }) {
           <li key={link}>
             <a
               href="#"
-              className="group flex items-start gap-1.5 text-sm font-semibold text-navy-600 transition-colors hover:text-azure"
+              className="group flex items-start gap-1.5 text-sm font-semibold text-heading-600 transition-colors hover:text-azure"
             >
               <ChevronRight
                 size={15}

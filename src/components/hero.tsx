@@ -69,7 +69,7 @@ export function Hero() {
         <div className="mt-7 flex flex-wrap gap-3">
           <a
             href="#servicios"
-            className="inline-flex items-center gap-2 rounded-md bg-white px-5 py-2.5 text-sm font-semibold text-navy transition-colors hover:bg-tint"
+            className="inline-flex items-center gap-2 rounded-md bg-surface px-5 py-2.5 text-sm font-semibold text-heading transition-colors hover:bg-tint"
           >
             {hero.ctaPrimary}
             <ArrowRight size={16} aria-hidden="true" />
@@ -126,7 +126,7 @@ export function Hero() {
                   className="w-full shrink-0 pr-4 sm:w-1/2 lg:w-1/3"
                   aria-hidden={i < index || i >= index + visible}
                 >
-                  <article className="flex h-full flex-col rounded-lg border border-white/15 bg-white/[0.07] p-6 backdrop-blur-sm transition-colors hover:border-azure-light/70 hover:bg-white/[0.12]">
+                  <article className="flex h-full flex-col rounded-lg border border-white/15 bg-surface/[0.07] p-6 backdrop-blur-sm transition-colors hover:border-azure-light/70 hover:bg-white/[0.12]">
                     <span className="inline-flex h-11 w-11 items-center justify-center rounded-md bg-azure/25 text-azure-light">
                       <Icon name={platform.icon} />
                     </span>
@@ -156,7 +156,7 @@ export function Hero() {
                 aria-current={i === index}
                 className={cn(
                   'h-1.5 rounded-full transition-all',
-                  i === index ? 'w-8 bg-white' : 'w-3 bg-white/35 hover:bg-white/60',
+                  i === index ? 'w-8 bg-surface' : 'w-3 bg-surface/35 hover:bg-white/60',
                 )}
               />
             ))}

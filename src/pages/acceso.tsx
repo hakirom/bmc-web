@@ -47,10 +47,10 @@ export function AccesoPage() {
           {t.volverInicio}
         </Link>
 
-        <div className="rounded-lg border border-line bg-white p-8 shadow-2xl">
+        <div className="rounded-lg border border-line bg-surface p-8 shadow-2xl">
           <BmcLogo />
 
-          <h1 className="mt-6 text-2xl font-bold text-navy">
+          <h1 className="mt-6 text-2xl font-bold text-heading">
             {esRegistro ? t.acceso.tituloRegistro : t.acceso.tituloEntrar}
           </h1>
           <p className="mt-2 text-sm text-muted">
@@ -144,7 +144,7 @@ function Campo({
 } & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value' | 'id'>) {
   return (
     <div>
-      <label htmlFor={id} className="block text-sm font-semibold text-navy">
+      <label htmlFor={id} className="block text-sm font-semibold text-heading">
         {etiqueta}
       </label>
       <input

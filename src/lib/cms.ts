@@ -151,6 +151,7 @@ type HomeCms = {
   tituloBoletines: string
   eyebrowContacto: string
   tituloContacto: string
+  seo: { metaTitulo: string; metaDescripcion: string; palabrasClave: string | null } | null
   cifras: { valor: string; etiqueta: string }[]
   mensajesValor: { texto: string }[]
   tarjetasContacto: { titulo: string; icono: string; lineas: string; cta: string | null }[]
@@ -166,6 +167,8 @@ export type SiteContent = {
   portal: ComponentePortal[]
   /** Guion del asistente PQRSF, indexado por clave de paso. */
   guionPqrsf: Record<string, string>
+  /** Metadatos de la página, gestionados en Home → SEO. */
+  seo: { titulo: string; descripcion: string; palabrasClave: string } | null
   hero: typeof heroLocal
   servicesSection: typeof serviciosLocal
   valueSection: typeof valorLocal
@@ -208,6 +211,7 @@ export const localContent: SiteContent = {
   })),
   portal: [],
   guionPqrsf: {},
+  seo: null,
   hero: heroLocal,
   servicesSection: serviciosLocal,
   valueSection: valorLocal,
@@ -307,6 +311,15 @@ function mapTextos(base: UiStrings, cms: TextosCms | null): UiStrings {
     cambiarIdioma: cms.acciones.cambiarIdioma ?? base.cambiarIdioma,
     saltarContenido: cms.acciones.saltarContenido ?? base.saltarContenido,
     volverInicio: cms.acciones.volverInicio ?? base.volverInicio,
+    cambiarTema: cms.acciones.cambiarTema ?? base.cambiarTema,
+    temaClaro: cms.acciones.temaClaro ?? base.temaClaro,
+    temaOscuro: cms.acciones.temaOscuro ?? base.temaOscuro,
+    navegacionPrincipal: cms.acciones.navegacionPrincipal ?? base.navegacionPrincipal,
+    irAlInicio: cms.acciones.irAlInicio ?? base.irAlInicio,
+    seccionMercados: cms.acciones.seccionMercados ?? base.seccionMercados,
+    seccionCifras: cms.acciones.seccionCifras ?? base.seccionCifras,
+    contactoWhatsapp: cms.acciones.contactoWhatsapp ?? base.contactoWhatsapp,
+    avisoDemo: cms.acciones.avisoDemo ?? base.avisoDemo,
     mercadoFisicos: cms.tablero.mercadoFisicos ?? base.mercadoFisicos,
     mercadoFinancieros: cms.tablero.mercadoFinancieros ?? base.mercadoFinancieros,
     columnas: {
@@ -455,6 +468,13 @@ export async function fetchSiteContent(
       .filter((c) => c.activo)
       .map(({ activo: _activo, ...c }) => c),
     guionPqrsf,
+    seo: h.seo
+      ? {
+          titulo: h.seo.metaTitulo,
+          descripcion: h.seo.metaDescripcion,
+          palabrasClave: h.seo.palabrasClave ?? '',
+        }
+      : null,
     boletines: boletines.data,
   }
 }

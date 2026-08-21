@@ -3,6 +3,7 @@ import { ContactSection } from '@/components/contact-section'
 import { DemoBadge } from '@/components/demo-badge'
 import { Hero } from '@/components/hero'
 import { MarketBoard } from '@/components/market-board'
+import { Metadatos } from '@/components/metadatos'
 import { Navbar } from '@/components/navbar'
 import { Services } from '@/components/services'
 import { SkipLink } from '@/components/skip-link'
@@ -16,6 +17,7 @@ import { WhatsappFab } from '@/components/whatsapp-fab'
 export default function App() {
   return (
     <>
+      <Metadatos />
       <SkipLink />
 
       <TopBar />

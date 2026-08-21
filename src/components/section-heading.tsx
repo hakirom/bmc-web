@@ -40,7 +40,7 @@ export function SectionHeading({
         <h2
           className={cn(
             'mt-3 text-balance text-2xl font-bold leading-snug tracking-tight sm:text-3xl lg:text-[34px]',
-            dark ? 'text-white' : 'text-navy',
+            dark ? 'text-white' : 'text-heading',
           )}
         >
           {title}

@@ -16,7 +16,7 @@ function Datos({ componente }: { componente: ComponentePortal }) {
         {marketBoard.summary.map((item) => (
           <div key={item.label} className="rounded border border-line bg-tint px-3 py-2">
             <dt className="text-[11px] uppercase tracking-wide text-muted">{item.label}</dt>
-            <dd className="mt-0.5 text-lg font-bold tabular-nums text-navy">{item.value}</dd>
+            <dd className="mt-0.5 text-lg font-bold tabular-nums text-heading">{item.value}</dd>
           </div>
         ))}
       </dl>
@@ -27,7 +27,7 @@ function Datos({ componente }: { componente: ComponentePortal }) {
     return (
       <ul className="mt-4 space-y-2">
         {boletines.slice(0, 3).map((b) => (
-          <li key={b.documentId} className="rounded border border-line bg-tint px-3 py-2 text-sm text-navy">
+          <li key={b.documentId} className="rounded border border-line bg-tint px-3 py-2 text-sm text-heading">
             {b.titulo}
           </li>
         ))}
@@ -44,7 +44,7 @@ function Datos({ componente }: { componente: ComponentePortal }) {
         ].map((tramite) => (
           <li key={tramite.id} className="flex items-center justify-between rounded border border-line bg-tint px-3 py-2">
             <span className="font-mono text-[13px] text-muted">{tramite.id}</span>
-            <span className="font-semibold text-navy">{tramite.estado}</span>
+            <span className="font-semibold text-heading">{tramite.estado}</span>
           </li>
         ))}
       </ul>
@@ -59,12 +59,12 @@ function Tarjeta({ componente, bloqueado }: { componente: ComponentePortal; bloq
 
   return (
     <article
-      className={`flex h-full flex-col rounded-lg border border-line bg-white p-6 transition-all duration-300 ${
+      className={`flex h-full flex-col rounded-lg border border-line bg-surface p-6 transition-all duration-300 ${
         bloqueado ? 'opacity-70' : 'hover:-translate-y-1 hover:border-azure/50 hover:shadow-[0_20px_45px_-30px_rgba(1,51,101,0.6)]'
       }`}
     >
       <div className="flex items-start justify-between gap-3">
-        <span className="inline-flex h-11 w-11 items-center justify-center rounded-md bg-tint text-navy">
+        <span className="inline-flex h-11 w-11 items-center justify-center rounded-md bg-tint text-heading">
           <Icon name={componente.icono} size={22} />
         </span>
         {bloqueado ? (
@@ -75,7 +75,7 @@ function Tarjeta({ componente, bloqueado }: { componente: ComponentePortal; bloq
         ) : null}
       </div>
 
-      <h2 className="mt-4 text-lg font-bold text-navy">{componente.titulo}</h2>
+      <h2 className="mt-4 text-lg font-bold text-heading">{componente.titulo}</h2>
       <p className="mt-2 text-sm leading-relaxed text-muted">{componente.descripcion}</p>
 
       {!bloqueado ? <Datos componente={componente} /> : null}
@@ -135,7 +135,7 @@ export function PortalPage() {
                   salir()
                   navigate('/')
                 }}
-                className="inline-flex items-center gap-1.5 rounded-md bg-white px-3.5 py-2 text-sm font-semibold text-navy transition-colors hover:bg-tint"
+                className="inline-flex items-center gap-1.5 rounded-md bg-surface px-3.5 py-2 text-sm font-semibold text-heading transition-colors hover:bg-tint"
               >
                 <LogOut size={15} aria-hidden="true" />
                 {t.acceso.cerrarSesion}
@@ -146,12 +146,12 @@ export function PortalPage() {
       </header>
 
       <main className="container-page py-12">
-        <h1 className="text-3xl font-bold text-navy">{t.portal.titulo}</h1>
+        <h1 className="text-3xl font-bold text-heading">{t.portal.titulo}</h1>
         <p className="mt-2 text-muted">{t.portal.subtitulo}</p>
         <span className="mt-5 block h-1 w-16 rounded-full bg-azure" aria-hidden="true" />
 
         {portal.length === 0 && !loading ? (
-          <p className="mt-12 rounded-lg border border-dashed border-line bg-white p-8 text-center text-muted">
+          <p className="mt-12 rounded-lg border border-dashed border-line bg-surface p-8 text-center text-muted">
             {t.portal.sinComponentes}
           </p>
         ) : (

@@ -16,6 +16,11 @@
   --color-ink: #212529;
   --color-muted: #5b6b7d;
   --color-line: #dfe6ee;
+
+  /* Roles separados del color de marca: `navy` sigue siendo el fondo
+     institucional, mientras que `surface` y `heading` cambian con el tema. */
+  --color-surface: #ffffff;
+  --color-heading: #013365;
   --color-line-dark: #17457c;
 
   --animate-marquee: marquee 45s linear infinite;
@@ -30,6 +35,28 @@
   }
 }
 
+/**
+ * Tema oscuro. Solo se redefinen los tokens: los componentes no necesitan
+ * variantes `dark:` porque ya usan estos colores por nombre. `navy` se oscurece
+ * un poco para que la cabecera no destaque más que el contenido.
+ */
+:root.oscuro {
+  --color-surface: #101c2e;
+  --color-heading: #dce8f6;
+  --color-ink: #e3ebf4;
+  --color-muted: #93a6bd;
+  --color-line: #24374f;
+  --color-tint: #16273c;
+  --color-sand: #0b1523;
+  --color-navy: #0a1524;
+  --color-navy-900: #060e18;
+  --color-navy-800: #0e1c2e;
+  --color-navy-600: #1d5286;
+  --color-azure: #4aa6e8;
+  --color-azure-light: #79c2f2;
+  --color-line-dark: #24374f;
+}
+
 @layer base {
   * {
     border-color: var(--color-line);
@@ -40,8 +67,11 @@
   }
 
   body {
-    background-color: #ffffff;
+    background-color: var(--color-surface);
     color: var(--color-ink);
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }

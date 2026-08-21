@@ -22,7 +22,7 @@ export function ValueCarousel() {
 
   return (
     <section
-      className="border-b border-line bg-white py-20"
+      className="border-b border-line bg-surface py-20"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       aria-roledescription="carrusel"
@@ -41,7 +41,7 @@ export function ValueCarousel() {
                 key={slide}
                 aria-hidden={i !== index}
                 className={cn(
-                  'col-start-1 row-start-1 text-balance text-center text-lg leading-relaxed text-navy transition-opacity duration-500 sm:text-xl',
+                  'col-start-1 row-start-1 text-balance text-center text-lg leading-relaxed text-heading transition-opacity duration-500 sm:text-xl',
                   i === index ? 'opacity-100' : 'pointer-events-none opacity-0',
                 )}
               >
@@ -55,7 +55,7 @@ export function ValueCarousel() {
               type="button"
               onClick={() => go(-1)}
               aria-label={t.anterior}
-              className="rounded-full border border-line p-2 text-navy transition-colors hover:border-navy hover:bg-navy hover:text-white"
+              className="rounded-full border border-line p-2 text-heading transition-colors hover:border-navy hover:bg-navy hover:text-white"
             >
               <ChevronLeft size={16} aria-hidden="true" />
             </button>
@@ -80,7 +80,7 @@ export function ValueCarousel() {
               type="button"
               onClick={() => go(1)}
               aria-label={t.siguiente}
-              className="rounded-full border border-line p-2 text-navy transition-colors hover:border-navy hover:bg-navy hover:text-white"
+              className="rounded-full border border-line p-2 text-heading transition-colors hover:border-navy hover:bg-navy hover:text-white"
             >
               <ChevronRight size={16} aria-hidden="true" />
             </button>

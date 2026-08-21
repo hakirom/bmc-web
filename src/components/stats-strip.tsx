@@ -2,11 +2,11 @@ import { useContent } from '@/lib/content-context'
 import { useReveal } from '@/lib/use-reveal'
 
 export function StatsStrip() {
-  const { stats } = useContent()
+  const { stats, ui: t } = useContent()
   const reveal = useReveal<HTMLDivElement>()
 
   return (
-    <section className="bg-navy py-12" aria-label="Cifras BMC">
+    <section className="bg-navy py-12" aria-label={t.seccionCifras}>
       <div
         ref={reveal.ref}
         style={reveal.style}

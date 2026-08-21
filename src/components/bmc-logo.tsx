@@ -24,7 +24,7 @@ export function BmcLogo({ className, dark = false }: { className?: string; dark?
           BMC
         </text>
       </svg>
-      <span className={cn('text-[10px] font-semibold uppercase leading-[1.25] tracking-[0.08em]', dark ? 'text-white' : 'text-navy')}>
+      <span className={cn('text-[10px] font-semibold uppercase leading-[1.25] tracking-[0.08em]', dark ? 'text-white' : 'text-heading')}>
         Bolsa
         <br />
         Mercantil

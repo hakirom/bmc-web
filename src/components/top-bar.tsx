@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ChevronDown, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { EnlaceUi } from './enlace-ui'
+import { TemaToggle } from './tema-toggle'
 import type { Locale } from '@/lib/cms'
 import { useContent } from '@/lib/content-context'
 
@@ -30,6 +31,8 @@ export function TopBar() {
           </EnlaceUi>
         ))}
 
+        <TemaToggle className="text-white/75 hover:text-white" />
+
         <div className="relative">
           <button
             type="button"
@@ -47,7 +50,7 @@ export function TopBar() {
           {open ? (
             <ul
               role="listbox"
-              className="absolute right-0 top-full z-[70] mt-1 w-32 overflow-hidden rounded-md border border-line bg-white py-1 text-ink shadow-lg"
+              className="absolute right-0 top-full z-[70] mt-1 w-32 overflow-hidden rounded-md border border-line bg-surface py-1 text-ink shadow-lg"
             >
               {IDIOMAS.map((idioma) => (
                 <li key={idioma.code}>
@@ -61,7 +64,7 @@ export function TopBar() {
                     }}
                     className={cn(
                       'block w-full px-3 py-1.5 text-left text-[13px] hover:bg-tint',
-                      locale === idioma.code && 'font-semibold text-navy',
+                      locale === idioma.code && 'font-semibold text-heading',
                     )}
                   >
                     {idioma.largo}

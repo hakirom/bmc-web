@@ -13,12 +13,12 @@ function ContactCard({ card, delay }: { card: ContactCardData; delay: number }) 
     <article
       ref={reveal.ref}
       style={reveal.style}
-      className={`${reveal.className} flex h-full flex-col rounded-lg border border-line bg-white p-6`}
+      className={`${reveal.className} flex h-full flex-col rounded-lg border border-line bg-surface p-6`}
     >
       <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-navy text-white">
         <Icon name={card.icon} size={20} />
       </span>
-      <h3 className="mt-4 text-lg font-bold text-navy">{card.title}</h3>
+      <h3 className="mt-4 text-lg font-bold text-heading">{card.title}</h3>
       <ul className="mt-3 space-y-1.5 text-sm text-muted">
         {card.links.map((link) => (
           <li key={link}>{link}</li>

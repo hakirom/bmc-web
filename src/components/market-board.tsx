@@ -11,7 +11,7 @@ export function MarketBoard() {
   return (
     <section aria-labelledby="market-board-title" className="relative z-10 bg-sand pb-16">
       <div className="container-page -mt-10">
-        <div className="overflow-hidden rounded-lg border border-line bg-white shadow-[0_24px_60px_-40px_rgba(1,51,101,0.55)]">
+        <div className="overflow-hidden rounded-lg border border-line bg-surface shadow-[0_24px_60px_-40px_rgba(1,51,101,0.55)]">
           <div className="grid lg:grid-cols-[320px_minmax(0,1fr)]">
             {/* Resumen del cierre */}
             <div className="border-b border-line bg-navy p-6 text-white lg:border-b-0 lg:border-r">
@@ -30,7 +30,7 @@ export function MarketBoard() {
                 </span>
               </div>
 
-              <label className="mt-4 flex items-center gap-2 rounded border border-white/25 bg-white/5 px-3 py-2 text-sm">
+              <label className="mt-4 flex items-center gap-2 rounded border border-white/25 bg-surface/5 px-3 py-2 text-sm">
                 <CalendarDays size={15} className="text-white/60" aria-hidden="true" />
                 <span className="sr-only">{t.fechaCierre}</span>
                 <input
@@ -43,7 +43,7 @@ export function MarketBoard() {
 
               <dl className="mt-5 space-y-3">
                 {marketBoard.summary.map((item) => (
-                  <div key={item.label} className="rounded border border-white/15 bg-white/[0.06] px-4 py-3">
+                  <div key={item.label} className="rounded border border-white/15 bg-surface/[0.06] px-4 py-3">
                     <dt className="text-[13px] text-white/65">{item.label}</dt>
                     <dd className="mt-0.5 text-xl font-bold tabular-nums text-white">{item.value}</dd>
                   </div>
@@ -61,7 +61,7 @@ export function MarketBoard() {
 
             {/* Tablero */}
             <div className="min-w-0">
-              <div className="flex" role="tablist" aria-label="Mercados">
+              <div className="flex" role="tablist" aria-label={t.seccionMercados}>
                 {marketBoard.tabs.map((t, i) => (
                   <button
                     key={t.label}
@@ -72,8 +72,8 @@ export function MarketBoard() {
                     className={cn(
                       'flex-1 border-b-2 px-4 py-3.5 text-[13px] font-bold uppercase tracking-[0.08em] transition-colors',
                       tab === i
-                        ? 'border-azure bg-tint text-navy'
-                        : 'border-transparent bg-white text-muted hover:bg-tint/60 hover:text-navy',
+                        ? 'border-azure bg-tint text-heading'
+                        : 'border-transparent bg-surface text-muted hover:bg-tint/60 hover:text-navy',
                     )}
                   >
                     {t.label}
@@ -116,7 +116,7 @@ export function MarketBoard() {
                 </table>
               </div>
 
-              <p className="border-t border-line bg-white px-4 py-3 text-[12px] text-muted">
+              <p className="border-t border-line bg-surface px-4 py-3 text-[12px] text-muted">
                 {marketBoard.note}
               </p>
             </div>

@@ -8,7 +8,7 @@ export function SourceBadge() {
 
   if (loading) {
     return (
-      <span className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-line bg-white px-3.5 py-2 text-xs font-semibold text-muted shadow-lg">
+      <span className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-2 text-xs font-semibold text-muted shadow-lg">
         <Loader2 size={13} className="animate-spin" aria-hidden="true" />
         {t.consultandoCms}
       </span>

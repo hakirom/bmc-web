@@ -29,9 +29,9 @@ export function PlataformaPanel({
     <div className="fixed inset-0 z-[80] flex justify-end" role="dialog" aria-modal="true" aria-label={plataforma.title}>
       <button type="button" aria-label={t.cerrarMenu} onClick={onClose} className="flex-1 bg-navy-900/60 backdrop-blur-sm" />
 
-      <aside className="flex w-full max-w-md flex-col overflow-y-auto bg-white shadow-2xl">
+      <aside className="flex w-full max-w-md flex-col overflow-y-auto bg-surface shadow-2xl">
         <header className="flex items-start gap-4 border-b border-line bg-navy p-6 text-white">
-          <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-white/10 text-azure-light">
+          <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-surface/10 text-azure-light">
             <Icon name={plataforma.icon} size={24} />
           </span>
           <div className="min-w-0">
@@ -56,7 +56,7 @@ export function PlataformaPanel({
           {plataforma.caracteristicas.length > 0 ? (
             <ul className="mt-6 space-y-3">
               {plataforma.caracteristicas.map((c) => (
-                <li key={c} className="flex items-start gap-2.5 text-sm text-navy">
+                <li key={c} className="flex items-start gap-2.5 text-sm text-heading">
                   <Check size={16} className="mt-0.5 shrink-0 text-azure" aria-hidden="true" />
                   {c}
                 </li>

@@ -41,6 +41,20 @@ volver a compilar o desplegar.
 `vercel.json` reescribe todas las rutas a `index.html`; sin eso, recargar en `/portal`
 devolvería 404.
 
+## Tema claro y oscuro
+
+El interruptor está en la barra superior (y en la cabecera en móvil). Respeta la
+preferencia del sistema mientras el usuario no elija; en cuanto elige, se guarda en
+`localStorage` y manda sobre el sistema.
+
+No hay variantes `dark:` repartidas por los componentes: `src/styles/globals.css`
+redefine los **tokens de color** bajo `:root.oscuro`, así que cada componente sigue
+usando `bg-surface`, `text-heading` o `border-line` sin saber en qué tema está.
+
+Dos tokens tienen el papel separado a propósito: `navy` es el color institucional de
+fondo (cabecera y pie siguen siendo azul oscuro en ambos temas), mientras que `surface`
+y `heading` son los que cambian.
+
 ## De dónde sale el contenido
 
 - `src/lib/cms.ts` — cliente REST; mapea la respuesta de Strapi a las formas que usa la UI.
@@ -48,6 +62,9 @@ devolvería 404.
   contenido local** si el CMS no responde (el badge inferior izquierdo lo indica).
 - `src/data/site.ts` y `src/data/ui.ts` — respaldo sin conexión. **No son la fuente**:
   todo el contenido editable vive en el CMS.
+- `src/components/metadatos.tsx` — lleva al documento el título, la descripción y las
+  palabras clave que se editan en **Home → SEO**, y el `lang` según el idioma activo. El
+  `index.html` solo aporta el valor inicial para el primer pintado.
 
 ## Despliegue en Vercel
 
