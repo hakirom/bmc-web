@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { ArrowRight, FileText } from 'lucide-react'
 import { useContent } from '@/lib/content-context'
 import { useReveal } from '@/lib/use-reveal'
@@ -49,13 +50,13 @@ export function BoletinesSection() {
               <h3 className="mt-2 text-base font-bold leading-snug text-heading">{boletin.titulo}</h3>
               <p className="mt-3 text-sm leading-relaxed text-muted">{boletin.resumen}</p>
 
-              <a
-                href="#"
+              <Link
+                to={`/boletines/${boletin.slug}`}
                 className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-semibold text-azure hover:underline"
               >
                 {t.leerBoletin}
                 <ArrowRight size={14} aria-hidden="true" />
-              </a>
+              </Link>
             </article>
           ))}
         </div>

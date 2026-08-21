@@ -37,6 +37,7 @@ volver a compilar o desplegar.
 | `/acceso` | Inicio de sesión y registro contra el CMS |
 | `/portal` | Portal privado con los componentes activos del CMS |
 | `/pqrsf` | Asistente que radica peticiones, quejas y reclamos |
+| `/boletines/:slug` | Artículo completo de un boletín |
 
 `vercel.json` reescribe todas las rutas a `index.html`; sin eso, recargar en `/portal`
 devolvería 404.

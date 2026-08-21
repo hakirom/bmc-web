@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import App from "./App";
 import { AccesoPage } from "./pages/acceso";
+import { BoletinPage } from "./pages/boletin";
 import { PortalPage } from "./pages/portal";
 import { PqrsfPage } from "./pages/pqrsf";
 import { AuthProvider } from "./lib/auth";
@@ -24,6 +25,7 @@ createRoot(container).render(
               <Route path="/acceso" element={<AccesoPage />} />
               <Route path="/portal" element={<PortalPage />} />
               <Route path="/pqrsf" element={<PqrsfPage />} />
+            <Route path="/boletines/:slug" element={<BoletinPage />} />
               <Route path="*" element={<App />} />
             </Routes>
           </AuthProvider>

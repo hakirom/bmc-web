@@ -95,6 +95,21 @@ export type BoletinCms = {
   resumen: string
   categoria: 'boletin-diario' | 'estudio-economico' | 'comunicado'
   destacado: boolean
+  contenido?: unknown[] | null
+  redactadoPor?: 'manual' | 'local' | 'modelo' | null
+}
+
+/** Trae un boletín por su slug, con el cuerpo completo. */
+export async function fetchBoletin(
+  slug: string,
+  locale: Locale = 'es',
+  signal?: AbortSignal,
+): Promise<BoletinCms | null> {
+  const respuesta = await intentar<StrapiList<BoletinCms>>(
+    [`/boletines?locale=${locale}&filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`],
+    signal,
+  )
+  return respuesta?.data?.[0] ?? null
 }
 
 export type PlataformaDetalle = {
