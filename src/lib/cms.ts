@@ -151,22 +151,22 @@ type HomeCms = {
   eyebrow: string
   titulo: string
   subtitulo: string
-  ctaPrimario: EnlaceCms | null
-  ctaSecundario: EnlaceCms | null
+  ctaPrimario: EnlaceCms | string | null
+  ctaSecundario: EnlaceCms | string | null
   tituloServicios: string
   introServicios: string
   tituloValor: string
   etiquetaPlataformas: string
   tituloTablero: string
-  ctaTablero: EnlaceCms | null
+  ctaTablero: EnlaceCms | string | null
   notaTablero: string
   eyebrowBoletines: string
   tituloBoletines: string
   eyebrowContacto: string
   tituloContacto: string
   seo: { metaTitulo: string; metaDescripcion: string; palabrasClave: string | null } | null
-  cifras: { valor: string; etiqueta: string; tendencia: string | null; progreso: number | null }[]
-  panelCifras: {
+  cifras: { valor: string; etiqueta: string; tendencia?: string | null; progreso?: number | null }[]
+  panelCifras?: {
     titulo: string
     descripcion: string | null
     fuente: string
@@ -259,6 +259,27 @@ async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
   return (await res.json()) as T
 }
 
+/**
+ * Pide un recurso tolerando que el CMS vaya por detrás o por delante del front.
+ *
+ * Acepta varias rutas y se queda con la primera que responda: así, si un
+ * `populate` menciona un campo que todavía no existe en el CMS —Strapi devuelve
+ * 400 «Invalid key»— se reintenta con una consulta más simple en lugar de
+ * tumbar la carga entera. Si ninguna funciona devuelve null y quien llama
+ * decide con qué respaldo seguir.
+ */
+async function intentar<T>(rutas: string[], signal?: AbortSignal): Promise<T | null> {
+  for (const ruta of rutas) {
+    try {
+      return await get<T>(ruta, signal)
+    } catch (error) {
+      if (signal?.aborted) throw error
+      console.warn(`[cms] Sin respuesta útil en ${ruta}:`, (error as Error).message)
+    }
+  }
+  return null
+}
+
 const aNumero = (valor: number | string | null | undefined) => {
   const n = typeof valor === 'number' ? valor : Number(valor)
   return Number.isFinite(n) ? n : 0
@@ -273,6 +294,17 @@ function mapMarketBoard(
   const formatoPesos = (valor: number) => `$ ${numeros.format(valor)}`
   const formatoTasa = (tasa: number) =>
     `${new Intl.NumberFormat(t.intlLocale, { minimumFractionDigits: 2 }).format(tasa)} %`
+
+  // Un tablero vacío se ve roto: si el CMS no devolvió operaciones, se mantiene
+  // la tabla de respaldo y solo se toman del CMS los rótulos.
+  if (operaciones.length === 0) {
+    return {
+      ...marketBoardLocal,
+      title: etiquetas.titulo,
+      cta: etiquetas.cta,
+      note: etiquetas.nota,
+    }
+  }
 
   const fisicos = operaciones.filter((o) => o.tipoMercado === 'fisicos')
   const financieros = operaciones.filter((o) => o.tipoMercado === 'financieros')
@@ -388,57 +420,91 @@ function mapTextos(base: UiStrings, cms: TextosCms | null): UiStrings {
   }
 }
 
-/** Un enlace del CMS; si falta, se usa la etiqueta y el destino de reserva. */
-const accion = (e: EnlaceCms | null, etiqueta: string, url = '#'): Accion => ({
-  label: e?.etiqueta || etiqueta,
-  url: e?.url || url,
-})
+/**
+ * Un enlace del CMS. Acepta también una cadena suelta: antes estos campos eran
+ * texto y un CMS que aún no se haya actualizado los sigue devolviendo así.
+ */
+const accion = (e: EnlaceCms | string | null, etiqueta: string, url = '#'): Accion => {
+  if (typeof e === 'string') return { label: e || etiqueta, url }
+  return { label: e?.etiqueta || etiqueta, url: e?.url || url }
+}
 
 const columnas = (cols: ColumnaCms[]) =>
   cols.map((c) => ({ title: c.titulo, links: c.enlaces.map((e) => e.etiqueta) }))
 
-/** Trae todo el contenido del CMS en un idioma. Lanza si Strapi no responde. */
+/**
+ * Trae el contenido del CMS en un idioma.
+ *
+ * Cada recurso se pide por separado y con reintento a una consulta más simple:
+ * que falte uno —porque el CMS aún no tiene ese campo, o porque ese endpoint
+ * concreto falla— degrada solo esa parte, en vez de dejar la página entera con
+ * el contenido de respaldo.
+ */
 export async function fetchSiteContent(
   locale: Locale = 'es',
   signal?: AbortSignal,
 ): Promise<SiteContent> {
   const l = `locale=${locale}`
 
-  const [
-    home,
-    plataformas,
-    servicios,
-    operaciones,
-    boletines,
-    configuracion,
-    textos,
-    portal,
-  ] = await Promise.all([
-    get<StrapiSingle<HomeCms>>(`/home?${l}&${POPULATE_HOME}`, signal),
-    get<StrapiList<PlataformaCms>>(`/plataformas?${l}&sort=orden:asc&populate=caracteristicas`, signal),
-    get<StrapiList<ServicioCms>>(`/servicios?${l}&populate=enlaces&sort=orden:asc`, signal),
-    get<StrapiList<OperacionCms>>(
-      `/operaciones-mercado?pagination[pageSize]=100&sort=numeroNegocio:asc`,
-      signal,
-    ),
-    get<StrapiList<BoletinCms>>(`/boletines?${l}&sort=fecha:desc&pagination[pageSize]=6`, signal),
-    get<StrapiSingle<ConfiguracionCms>>(`/configuracion-sitio?${l}&${POPULATE_CONFIG}`, signal),
-    get<StrapiSingle<TextosCms>>(`/textos-interfaz?${l}&populate=*`, signal),
-    get<StrapiList<ComponentePortalCms>>(`/componentes-portal?${l}&sort=orden:asc`, signal),
-  ])
+  const [home, plataformas, servicios, operaciones, boletines, configuracion, textos, portal] =
+    await Promise.all([
+      // Si el CMS no conoce algún campo del populate detallado, se reintenta
+      // con `populate=*`, que siempre es válido aunque no traiga lo anidado.
+      intentar<StrapiSingle<HomeCms>>(
+        [`/home?${l}&${POPULATE_HOME}`, `/home?${l}&populate=*`, `/home?${l}`],
+        signal,
+      ),
+      intentar<StrapiList<PlataformaCms>>(
+        [`/plataformas?${l}&sort=orden:asc&populate=caracteristicas`, `/plataformas?${l}`],
+        signal,
+      ),
+      intentar<StrapiList<ServicioCms>>(
+        [`/servicios?${l}&populate=enlaces&sort=orden:asc`, `/servicios?${l}`],
+        signal,
+      ),
+      intentar<StrapiList<OperacionCms>>(
+        [`/operaciones-mercado?pagination[pageSize]=100&sort=numeroNegocio:asc`],
+        signal,
+      ),
+      intentar<StrapiList<BoletinCms>>(
+        [`/boletines?${l}&sort=fecha:desc&pagination[pageSize]=6`],
+        signal,
+      ),
+      intentar<StrapiSingle<ConfiguracionCms>>(
+        [`/configuracion-sitio?${l}&${POPULATE_CONFIG}`, `/configuracion-sitio?${l}&populate=*`],
+        signal,
+      ),
+      intentar<StrapiSingle<TextosCms>>([`/textos-interfaz?${l}&populate=*`], signal),
+      intentar<StrapiList<ComponentePortalCms>>(
+        [`/componentes-portal?${l}&sort=orden:asc`],
+        signal,
+      ),
+    ])
 
-  const h = home.data
-  if (!h) throw new Error('El single type Home no tiene contenido publicado')
+  const h = home?.data ?? null
 
-  const cfg = configuracion.data
-  const t = mapTextos(ui[locale], textos.data)
+  // Sin el single type Home no hay portada que construir: se avisa y se usa el
+  // respaldo local, pero conservando lo que sí respondió.
+  if (!h) {
+    console.warn('[cms] Home no disponible; se usa el contenido local para esa parte.')
+    return {
+      ...localContent,
+      locale,
+      source: 'local',
+      boletines: boletines?.data ?? [],
+      portal: (portal?.data ?? []).filter((c) => c.activo).map(({ activo: _a, ...c }) => c),
+    }
+  }
+
+  const cfg = configuracion?.data ?? null
+  const t = mapTextos(ui[locale], textos?.data ?? null)
 
   const guionPqrsf = Object.fromEntries(
-    (textos.data?.guionPqrsf ?? []).map((paso) => [paso.clave, paso.mensaje]),
+    (textos?.data?.guionPqrsf ?? []).map((paso) => [paso.clave, paso.mensaje]),
   )
 
   // El interruptor `activa` del CMS decide qué plataformas se publican.
-  const plataformasActivas = plataformas.data.filter((p) => p.activa)
+  const plataformasActivas = (plataformas?.data ?? []).filter((p) => p.activa !== false)
 
   return {
     source: 'cms',
@@ -466,17 +532,20 @@ export async function fetchSiteContent(
       subtitle: h.subtitulo,
       ctaPrimary: accion(h.ctaPrimario, heroLocal.ctaPrimary.label, '/portal'),
       ctaSecondary: accion(h.ctaSecundario, heroLocal.ctaSecondary.label, '/acceso'),
-      platforms: plataformasActivas.map((p) => ({
-        title: p.titulo,
-        body: p.descripcion,
-        icon: p.icono,
-      })),
+      platforms:
+        plataformasActivas.length > 0
+          ? plataformasActivas.map((p) => ({
+              title: p.titulo,
+              body: p.descripcion,
+              icon: p.icono,
+            }))
+          : heroLocal.platforms,
     },
     servicesSection: {
       ...serviciosLocal,
       title: h.tituloServicios,
       intro: h.introServicios,
-      groups: servicios.data.map((s) => ({
+      groups: (servicios?.data ?? []).map((s) => ({
         title: s.titulo,
         body: s.descripcion,
         icon: s.icono,
@@ -513,7 +582,7 @@ export async function fetchSiteContent(
         cta: t.cta ?? 'Conoce más',
       })),
     },
-    marketBoard: mapMarketBoard(operaciones.data, t, {
+    marketBoard: mapMarketBoard(operaciones?.data ?? [], t, {
       titulo: h.tituloTablero,
       cta: accion(h.ctaTablero, marketBoardLocal.cta, '/portal'),
       nota: h.notaTablero,
@@ -527,7 +596,7 @@ export async function fetchSiteContent(
       requiereSesion: p.requiereSesion,
       caracteristicas: (p.caracteristicas ?? []).map((c) => c.texto),
     })),
-    portal: portal.data
+    portal: (portal?.data ?? [])
       .filter((c) => c.activo)
       .map(({ activo: _activo, ...c }) => c),
     guionPqrsf,
@@ -538,6 +607,6 @@ export async function fetchSiteContent(
           palabrasClave: h.seo.palabrasClave ?? '',
         }
       : null,
-    boletines: boletines.data,
+    boletines: boletines?.data ?? [],
   }
 }

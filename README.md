@@ -72,6 +72,24 @@ informe real basta con sustituir el contenido del marco por su iframe.
 - `src/lib/cms.ts` — cliente REST; mapea la respuesta de Strapi a las formas que usa la UI.
 - `src/lib/content-context.tsx` — carga el contenido en el idioma activo y **cae al
   contenido local** si el CMS no responde (el badge inferior izquierdo lo indica).
+
+### Tolerancia al desajuste de versiones
+
+El front y el CMS se despliegan por separado, así que uno puede ir por delante del otro.
+Para que eso no rompa la página:
+
+- **Cada recurso se pide por separado.** Que falle uno degrada solo esa sección, no la
+  portada entera.
+- **Cada petición reintenta con una consulta más simple.** Si un `populate` menciona un
+  campo que el CMS todavía no tiene, Strapi responde `400 Invalid key`; se reintenta con
+  `populate=*` y luego sin populate.
+- **Los campos que cambiaron de tipo se aceptan en ambas formas.** Los CTA eran texto y
+  ahora son enlaces: si llega texto, se usa como etiqueta con el destino por defecto.
+- **Las listas vacías usan el respaldo.** Un tablero o un carrusel en blanco parecen un
+  fallo; es preferible mostrar el contenido local.
+
+Aun así, **despliegue primero el CMS y después el front** cuando un cambio toque a los
+dos: la tolerancia evita el error, no sustituye al contenido nuevo.
 - `src/data/site.ts` y `src/data/ui.ts` — respaldo sin conexión. **No son la fuente**:
   todo el contenido editable vive en el CMS.
 - `src/components/metadatos.tsx` — lleva al documento el título, la descripción y las
