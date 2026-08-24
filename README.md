@@ -97,7 +97,20 @@ dos: la tolerancia evita el error, no sustituye al contenido nuevo.
   palabras clave que se editan en **Home → SEO**, y el `lang` según el idioma activo. El
   `index.html` solo aporta el valor inicial para el primer pintado.
 
-## Despliegue en Vercel
+## Despliegue
+
+### AWS Amplify Hosting
+
+`amplify.yml` ya define la compilación, así que Amplify no pregunta nada al conectar el
+repositorio. Después hay que añadir a mano dos cosas en la consola:
+
+1. **Rewrites and redirects** → una regla `/<*>` → `/index.html` de tipo **200 (Rewrite)**.
+   Sin ella, entrar directo a `/portal` o `/boletines/...` devuelve 404: Amplify no
+   deduce solo que esto es una SPA.
+2. **Environment variables** → `VITE_CMS_URL` con la URL del CMS. Vite la incrusta al
+   compilar, así que hay que volver a desplegar tras cambiarla.
+
+### Vercel
 
 Importe el repositorio y despliegue: Vercel detecta Vite y usa el `vercel.json` del repo.
 Defina `VITE_CMS_URL` en **Settings → Environment Variables** y vuelva a desplegar.
